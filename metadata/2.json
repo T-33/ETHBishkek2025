@@ -1,0 +1,37 @@
+{
+  "name": "Aegis of the Sun King",
+  "description": "An epic chestplate crafted from enchanted gold and blessed by a solar deity. It is said to blind foes with its brilliance and turn away even the most devastating blows.",
+  "image": "ipfs://bafybeiaruoyhdj3tdnj5qtttmr2kunoathmiz2x2utjasl44q7wakm6caa/2.png",
+  "attributes": [
+    {
+      "trait_type": "Item Type",
+      "value": "Armor"
+    },
+    {
+      "trait_type": "Armor Slot",
+      "value": "Chest"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Epic"
+    },
+    {
+      "trait_type": "Material",
+      "value": "Enchanted Gold"
+    },
+    {
+      "display_type": "number",
+      "trait_type": "Defense",
+      "value": 95
+    },
+    {
+      "display_type": "boost_percentage",
+      "trait_type": "Fire Resistance",
+      "value": 25
+    },
+    {
+      "trait_type": "Special Ability",
+      "value": "Solar Flare"
+    }
+  ]
+}

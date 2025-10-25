@@ -1,0 +1,19 @@
+{
+  "name": "Gold Coin",
+  "description": "A standard gold coin, the primary currency used by merchants and adventurers across the realm. It gleams with the promise of fortune.",
+  "image": "ipfs://bafybeiaruoyhdj3tdnj5qtttmr2kunoathmiz2x2utjasl44q7wakm6caa/0.png",
+  "attributes": [
+    {
+      "trait_type": "Item Type",
+      "value": "Currency"
+    },
+    {
+      "trait_type": "Material",
+      "value": "Gold"
+    },
+    {
+      "trait_type": "Stackable",
+      "value": "Yes"
+    }
+  ]
+}

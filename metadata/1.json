@@ -1,0 +1,32 @@
+{
+  "name": "Blade of the Void",
+  "description": "A legendary sword forged from a fallen star. It is said to cut through not just flesh and steel, but the very fabric of reality itself. Only one is known to exist.",
+  "image": "ipfs://bafybeiaruoyhdj3tdnj5qtttmr2kunoathmiz2x2utjasl44q7wakm6caa/1.png",
+  "attributes": [
+    {
+      "trait_type": "Item Type",
+      "value": "Weapon"
+    },
+    {
+      "trait_type": "Weapon Type",
+      "value": "Longsword"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Legendary"
+    },
+    {
+      "trait_type": "Material",
+      "value": "Starmetal"
+    },
+    {
+      "display_type": "number",
+      "trait_type": "Attack Power",
+      "value": 120
+    },
+    {
+      "trait_type": "Special Ability",
+      "value": "Void Strike"
+    }
+  ]
+}
