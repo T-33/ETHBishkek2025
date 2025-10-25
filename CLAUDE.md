@@ -20,6 +20,10 @@ yarn deploy
 yarn start
 # Frontend runs at http://localhost:3000
 # Debug contracts UI at http://localhost:3000/debug
+
+# Generate test data for analytics (Optional, after deployment)
+yarn generate-activity
+# Populates analytics dashboard with test transactions
 ```
 
 ### Testing & Quality

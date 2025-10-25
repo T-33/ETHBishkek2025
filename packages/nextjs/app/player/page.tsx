@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useAccount } from "wagmi";
+import { BurnTokens } from "~~/components/player/BurnTokens";
 import { Inventory } from "~~/components/player/Inventory";
 import { LootboxOpener } from "~~/components/player/LootboxOpener";
 import { Address } from "~~/components/scaffold-eth";
@@ -47,6 +48,11 @@ export default function PlayerPage() {
         </div>
       </div>
 
+      {/* Burn Tokens Section */}
+      <div className="mt-8">
+        <BurnTokens />
+      </div>
+
       {/* Info Section */}
       <div className="mt-8 bg-blue-500/10 border border-blue-500/30 rounded-xl p-6">
         <h3 className="text-xl font-bold text-blue-400 mb-3">How to Play</h3>
@@ -65,6 +71,10 @@ export default function PlayerPage() {
           </li>
           <li className="flex items-start gap-2">
             <span className="text-blue-400 mt-1">4.</span>
+            <span>Burn unwanted items to reduce supply and increase rarity</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="text-blue-400 mt-1">5.</span>
             <span>
               Rarities: <span className="text-gray-400">Common</span> • <span className="text-purple-400">Epic</span> •{" "}
               <span className="text-yellow-400">Legendary</span>

@@ -1,9 +1,10 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "./EconomyController.sol"; // We need to know the interface of the controller
 
-contract Lootbox is Ownable {
+contract Lootbox is Ownable, Pausable {
     // --- State Variables ---
 
     // The address of the EconomyController. Set once and can never be changed.
@@ -17,6 +18,7 @@ contract Lootbox is Ownable {
 
     // --- Events ---
     event LootboxOpened(address indexed player, uint256 indexed prizeTokenId, uint256 amount);
+    event PriceUpdated(uint256 oldPrice, uint256 newPrice);
 
     // --- Constructor ---
     constructor(address _controllerAddress, address initialOwner) Ownable(initialOwner) {
@@ -29,7 +31,7 @@ contract Lootbox is Ownable {
     /**
      * @notice Allows a player to pay a fee to open a loot box and receive a random item.
      */
-    function openLootbox() public payable {
+    function openLootbox() public payable whenNotPaused {
         // 1. CHECK: Ensure the player has paid the correct price.
         require(msg.value == lootboxPrice, "Incorrect payment amount");
 
@@ -87,7 +89,24 @@ contract Lootbox is Ownable {
      * @notice Allows the owner to change the price of the loot box.
      */
     function setPrice(uint256 _newPrice) public onlyOwner {
+        require(_newPrice > 0, "Price must be greater than 0");
+        uint256 oldPrice = lootboxPrice;
         lootboxPrice = _newPrice;
+        emit PriceUpdated(oldPrice, _newPrice);
+    }
+
+    /**
+     * @notice Pause the contract (prevents opening lootboxes)
+     */
+    function pause() public onlyOwner {
+        _pause();
+    }
+
+    /**
+     * @notice Unpause the contract (allows opening lootboxes)
+     */
+    function unpause() public onlyOwner {
+        _unpause();
     }
 
     /**

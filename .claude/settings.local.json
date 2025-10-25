@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(yarn check-types:*)",
+      "Bash(yarn lint:*)",
+      "Bash(yarn add recharts)",
+      "Bash(yarn generate-activity:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -23,6 +23,24 @@ contract GameItems is ERC1155, Ownable {
         _mint(to, tokenId, amount, data);
     }
 
+    /**
+     * @notice Allows players to burn their own tokens
+     * @param tokenId The ID of the token to burn
+     * @param amount The amount to burn
+     */
+    function burn(uint256 tokenId, uint256 amount) public {
+        _burn(msg.sender, tokenId, amount);
+    }
+
+    /**
+     * @notice Allows players to burn multiple token types at once
+     * @param tokenIds Array of token IDs to burn
+     * @param amounts Array of amounts to burn
+     */
+    function burnBatch(uint256[] memory tokenIds, uint256[] memory amounts) public {
+        _burnBatch(msg.sender, tokenIds, amounts);
+    }
+
     // --- URI Management ---
     // This function returns the metadata URL for a given token ID.
     // OpenZeppelin's ERC1155 contract handles this for us by combining the base URI

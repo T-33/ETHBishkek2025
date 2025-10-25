@@ -20,7 +20,7 @@ async function main() {
   console.log("\nSetting up economic parameters...");
   // Set item rarities
   const tokenIds = [0, 1, 2]; // Gold, Sword, Chestplate
-  const weights = [100, 5, 10]; // Common, Legendary, Epic
+  const weights = [10, 5, 10]; // Common, Legendary, Epic
   await economyController.setRarity(tokenIds, weights);
   console.log("- Item rarities have been set.");
 
