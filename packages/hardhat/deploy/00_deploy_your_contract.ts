@@ -11,7 +11,7 @@ const deployHephaestusProtocol: DeployFunction = async function (hre: HardhatRun
   const { deployer } = await hre.getNamedAccounts();
   const { deploy, get } = hre.deployments;
 
-  const initialOwner = "0x0Da5B502C97a8340F9677026641E2AADf7cFCa5D";
+  const initialOwner = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
   console.log("🚀 Deploying Hephaestus Protocol...");
 
   // ----------------- DEPLOYMENT -----------------
@@ -54,37 +54,39 @@ const deployHephaestusProtocol: DeployFunction = async function (hre: HardhatRun
 
   // 4. Transfer ownership of GameItems to EconomyController
   // This is so only the controller can mint new items.
-  const gameItemsContract = await hre.ethers.getContractAt("GameItems", gameItemsDeployment.address);
+  // const gameItemsContract = await hre.ethers.getContractAt("GameItems", gameItemsDeployment.address);
   const economyControllerContract = await hre.ethers.getContractAt(
     "EconomyController",
     economyControllerDeployment.address,
   );
   const lootBoxContract = await hre.ethers.getContractAt("Lootbox", lootboxDeployment.address);
 
-  const gameItemsOwner = await gameItemsContract.owner();
-  console.log("GameItems Owber:", gameItemsOwner);
-  if (gameItemsOwner === deployer) {
-    console.log("... Transferring GameItems ownership to EconomyController");
-    await gameItemsContract.transferOwnership(economyControllerContract.address);
-    console.log("... Ownership transferred!");
-  }
+  // const gameItemsOwner = await gameItemsContract.owner();
+  // console.log("GameItems Owber:", gameItemsOwner);
+  // if (gameItemsOwner === deployer) {
+  //   console.log("... Transferring GameItems ownership to EconomyController");
+  //   await gameItemsContract.transferOwnership(economyControllerContract.target);
+  //   console.log("... Ownership transferred!");
+  // }
 
   // 5. Transfer ownership of Lootbox to EconomyController
   // This is so the controller can, for example, change the lootbox price in the future.
   const lootboxOwner = await lootBoxContract.owner();
   if (lootboxOwner === deployer) {
     console.log("... Transferring Lootbox ownership to EconomyController");
-    await lootBoxContract.transferOwnership(economyControllerContract.address);
+    await lootBoxContract.transferOwnership(economyControllerContract.target);
     console.log("... Ownership transferred!");
   }
-
+  //
   // 6. Set the Lootbox address in the EconomyController
   // This is a critical security step to authorize the lootbox to request mints.
   console.log("... Setting authorized Lootbox address in EconomyController");
   console.log("lootBoxContract:", lootBoxContract);
   // console.log("lootBoxContract address:", lootBoxContract.address);
-  // await economyControllerContract.setLootboxAddress("0x59b670e9fA9D0A427751Af201D676719a970857b");
+  await economyControllerContract.setLootboxAddress(lootBoxContract.target);
   console.log("... Lootbox address authorized!");
+
+  // await (await gameItemsContract.transferOwnership(economyControllerContract)).wait();
 
   console.log("\n🎉 Hephaestus Protocol deployed and configured successfully!");
 };
