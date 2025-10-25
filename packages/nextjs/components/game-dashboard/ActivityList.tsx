@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { GameEvent } from "../../types/game";
-import { shortAddress } from "../../utils/format";
+import { GameEvent } from "~~/types/game";
+import { shortAddress } from "~~/utils/format";
 
 interface Props {
   events: GameEvent[];

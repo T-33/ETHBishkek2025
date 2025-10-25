@@ -1,59 +1,68 @@
-// // nextjs/hooks/game/useAnalytics.ts
-// "use client";
-//
-// import { useEffect, useState } from "react";
-// import { useContractEvent } from "wagmi";
-// import gameAbi from "../../contracts/GameToken.json";
-// import { GameEvent } from "../../types/game";
-export const useAnalytics = () => "";
-// export const useAnalytics = () => {
-//     const [events, setEvents] = useState<GameEvent[]>([]);
-//     const contractInfo = useDeployedContractInfo("GameToken");
-//     const contractAddress = contractInfo?.address as `0x${string}` | undefined;
-//
-//     // Listen TransferSingle(operator, from, to, id, value)
-//     useContractEvent({
-//         address: contractAddress,
-//         abi: gameAbi as any,
-//         eventName: "TransferSingle",
-//         listener: (operator, from, to, id, value, event) => {
-//             try {
-//                 // id and value could be BigNumber-like
-//                 const nValue = Number((value as any)?.toString?.() ?? 0);
-//                 const fromAddr = (from as string) ?? ZERO;
-//                 const toAddr = (to as string) ?? ZERO;
-//
-//                 const action: GameEvent["action"] =
-//                     fromAddr === ZERO ? "Mint" : toAddr === ZERO ? "Burn" : "Transfer";
-//
-//                 const player = action === "Mint" ? toAddr : fromAddr;
-//
-//                 const evt: GameEvent = {
-//                     timestamp: Date.now(),
-//                     player,
-//                     action,
-//                     amount: nValue,
-//                     txHash: (event as any)?.transactionHash ?? undefined,
-//                 };
-//
-//                 setEvents(prev => {
-//                     const next = [evt, ...prev];
-//                     if (next.length > 500) next.length = 500;
-//                     return next;
-//                 });
-//             } catch (err) {
-//                 // non-fatal: log for debug
-//                 // eslint-disable-next-line no-console
-//                 console.error("useAnalytics: failed to parse TransferSingle event", err);
-//             }
-//         },
-//         once: false,
-//         enabled: !!contractAddress,
-//     });
-//
-//     // Derived metrics
-//     const metrics = aggregateMintBurn(events);
-//     const timeSeries = buildMintBurnTimeSeries(events);
-//
-//     return { events, metrics, timeSeries };
-// };
+"use client";
+
+import { useState } from "react";
+import gameAbi from "../../../hardhat/artifacts/contracts/GameItems.sol/GameItems.json";
+import { useWatchContractEvent } from "wagmi";
+import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
+import { aggregateMintBurn, buildMintBurnTimeSeries } from "~~/services/analytics";
+import { GameEvent } from "~~/types/game";
+
+const ZERO = "0x0000000000000000000000000000000000000000";
+
+// We use useWatchContractEvent which provides onLogs callback
+export const useAnalytics = () => {
+  const [events, setEvents] = useState<GameEvent[]>([]);
+  const { data: contractInfo } = useDeployedContractInfo("GameItems");
+  const contractAddress = contractInfo?.address as `0x${string}` | undefined;
+
+  useWatchContractEvent({
+    address: contractAddress,
+    abi: gameAbi as any,
+    eventName: "TransferSingle",
+    // `onLogs` receives an array of logs when available (wagmi helper)
+    onLogs(logs) {
+      if (!logs || logs.length === 0) return;
+      const parsed: GameEvent[] = [];
+      for (const l of logs) {
+        try {
+          const args = (l as any).args ?? {};
+          // TransferSingle(operator, from, to, id, value)
+          const from = (args.from ?? ZERO) as string;
+          const to = (args.to ?? ZERO) as string;
+          const rawValue = args.value ?? args[4] ?? 0;
+          const value = Number((rawValue as any)?.toString?.() ?? rawValue ?? 0);
+
+          const action: GameEvent["action"] =
+            from.toLowerCase() === ZERO ? "Mint" : to.toLowerCase() === ZERO ? "Burn" : "Transfer";
+
+          const player = action === "Mint" ? to : from;
+
+          parsed.push({
+            timestamp: Date.now(),
+            player,
+            action,
+            amount: value,
+            txHash: (l as any).transactionHash,
+          });
+        } catch (err) {
+          // ignore parse error
+          console.warn("parse log", err);
+        }
+      }
+
+      if (parsed.length) {
+        setEvents(prev => {
+          const next = [...parsed.reverse(), ...prev]; // older first from logs? ensure order
+          if (next.length > 500) next.length = 500;
+          return next;
+        });
+      }
+    },
+    enabled: !!contractAddress,
+  });
+
+  const metrics = aggregateMintBurn(events);
+  const timeSeries = buildMintBurnTimeSeries(events);
+
+  return { events, metrics, timeSeries };
+};

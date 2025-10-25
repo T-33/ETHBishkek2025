@@ -1,98 +1,99 @@
-// // nextjs/hooks/game/useGameToken.ts
-// "use client";
-//
-// import { useEffect, useState } from "react";
-// import { useAccount } from "wagmi";
-// import {
-//     useContractRead,
-//     usePrepareContractWrite,
-//     useContractWrite,
-//     useWaitForTransaction,
-// } from "wagmi";
-// import gameAbi from "../../contracts/GameToken.json";
-// import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
-//
-export const useGameToken = () => "";
-// const ZERO = "0x0000000000000000000000000000000000000000";
-//
-// export const useGameToken = () => {
-//     const { address } = useAccount();
-//     const contractInfo = useDeployedContractInfo("GameToken");
-//     const contractAddress = contractInfo?.address as `0x${string}` | undefined;
-//
-//     const [balance, setBalance] = useState<number>(0);
-//     const watchedArgs = [address ?? ZERO, 0];
-//
-//     // Read balanceOf(address, id)
-//     const read = useContractRead({
-//         address: contractAddress,
-//         abi: gameAbi as any,
-//         functionName: "balanceOf",
-//         args: watchedArgs,
-//         enabled: !!contractAddress && !!address,
-//         watch: true, // keep updated
-//     });
-//
-//     useEffect(() => {
-//         if (!read || !read.data) {
-//             setBalance(0);
-//             return;
-//         }
-//         try {
-//             const raw = read.data;
-//             // handle BigNumber or numeric string
-//             const val = typeof raw === "bigint" ? Number(raw) : Number((raw as any)?.toString?.() ?? 0);
-//             setBalance(val);
-//         } catch {
-//             setBalance(0);
-//         }
-//     }, [read.data]);
-//
-//     // Prepare mint (earn)
-//     const { config: mintConfig } = usePrepareContractWrite({
-//         address: contractAddress,
-//         abi: gameAbi as any,
-//         functionName: "mint",
-//         args: [address ?? ZERO, 0, 1, "0x"],
-//         enabled: !!contractAddress && !!address,
-//     });
-//     const mintWrite = useContractWrite(mintConfig);
-//
-//     // Prepare burn (spend)
-//     const { config: burnConfig } = usePrepareContractWrite({
-//         address: contractAddress,
-//         abi: gameAbi as any,
-//         functionName: "burn",
-//         args: [address ?? ZERO, 0, 1],
-//         enabled: !!contractAddress && !!address,
-//     });
-//     const burnWrite = useContractWrite(burnConfig);
-//
-//     // optional: expose tx status for UI
-//     const mintWait = useWaitForTransaction({ hash: mintWrite.data?.hash, enabled: !!mintWrite.data?.hash });
-//     const burnWait = useWaitForTransaction({ hash: burnWrite.data?.hash, enabled: !!burnWrite.data?.hash });
-//
-//     const earn = async () => {
-//         if (!mintWrite.writeAsync) throw new Error("mint not ready");
-//         return mintWrite.writeAsync();
-//     };
-//
-//     const spend = async () => {
-//         if (!burnWrite.writeAsync) throw new Error("burn not ready");
-//         return burnWrite.writeAsync();
-//     };
-//
-//     return {
-//         address,
-//         contractAddress,
-//         balance,
-//         earn,
-//         spend,
-//         tx: {
-//             mintHash: mintWrite.data?.hash,
-//             mintStatus: mintWait.status,
-//             burnHash: burnWrite.data?.hash,
-//             burnStatus: burnWait.status,
-//         },
-//     };
-// };
+// nextjs/hooks/game/useGameToken.ts
+"use client";
+
+import { useMemo } from "react";
+import gameAbi from "../../../hardhat/artifacts/contracts/GameItems.sol/GameItems.json";
+import { type Abi } from "viem";
+import { useAccount } from "wagmi";
+import { useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
+
+// nextjs/hooks/game/useGameToken.ts
+
+// nextjs/hooks/game/useGameToken.ts
+
+// nextjs/hooks/game/useGameToken.ts
+
+// nextjs/hooks/game/useGameToken.ts
+
+// nextjs/hooks/game/useGameToken.ts
+
+// nextjs/hooks/game/useGameToken.ts
+
+// nextjs/hooks/game/useGameToken.ts
+
+// nextjs/hooks/game/useGameToken.ts
+
+// nextjs/hooks/game/useGameToken.ts
+
+// nextjs/hooks/game/useGameToken.ts
+
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const GOLD_COIN_ID = 0; // Используем константу для ID токена
+
+export const useGameToken = () => {
+  const { address } = useAccount();
+  const { data: contractInfo } = useDeployedContractInfo("GameItems");
+  const contractAddress = contractInfo?.address;
+
+  // 1. Заменили useContractRead на useReadContract
+  // Он проще и возвращает данные в более удобном формате.
+  const { data: rawBalance, refetch: refetchBalance } = useReadContract({
+    address: contractAddress,
+    abi: gameAbi.abi as Abi,
+    functionName: "balanceOf",
+    args: [address ?? ZERO_ADDRESS, GOLD_COIN_ID],
+    query: {
+      enabled: !!contractAddress && !!address,
+    },
+  });
+
+  // 2. Убрали лишний useEffect и useState. Вычисляем баланс напрямую.
+  const balance = useMemo(() => (typeof rawBalance === "bigint" ? Number(rawBalance) : 0), [rawBalance]);
+
+  // 3. Заменили связку usePrepare/useWrite на единый useWriteContract.
+  // Он сам обрабатывает подготовку транзакции.
+  const { data: mintHash, writeContractAsync: mint } = useWriteContract();
+  const { data: burnHash, writeContractAsync: burn } = useWriteContract();
+
+  const earn = async () => {
+    if (!address) throw new Error("Wallet not connected");
+    return mint({
+      address: contractAddress!,
+      abi: gameAbi.abi as Abi,
+      functionName: "mint",
+      args: [address, GOLD_COIN_ID, 1, "0x"],
+    });
+  };
+
+  const spend = async () => {
+    if (!address) throw new Error("Wallet not connected");
+    // 4. ИСПРАВЛЕНО: Вызываем safeTransferFrom для сжигания токена
+    // Мы отправляем токен с нашего адреса (from) на нулевой адрес (to).
+    return burn({
+      address: contractAddress!,
+      abi: gameAbi.abi as Abi,
+      functionName: "safeTransferFrom",
+      args: [address, ZERO_ADDRESS, GOLD_COIN_ID, 1, "0x"],
+    });
+  };
+
+  // 5. Заменили useWaitForTransaction на useWaitForTransactionReceipt
+  const { status: mintStatus } = useWaitForTransactionReceipt({ hash: mintHash });
+  const { status: burnStatus } = useWaitForTransactionReceipt({ hash: burnHash });
+
+  return {
+    address,
+    contractAddress,
+    balance,
+    earn,
+    spend,
+    refetchBalance, // Добавили функцию для ручного обновления баланса
+    tx: {
+      mintHash,
+      mintStatus,
+      burnHash,
+      burnStatus,
+    },
+  };
+};

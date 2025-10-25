@@ -1,13 +1,14 @@
 "use client";
 
 import React from "react";
-import { formatNumber, shortAddress } from "../../utils/format";
+import { formatNumber, shortAddress } from "~~/utils/format";
 
 interface Props {
-  address?: string;
   balance: number;
-  onEarn: () => Promise<void> | void;
-  onSpend: () => Promise<void> | void;
+  onEarn: () => void | Promise<unknown>;
+  onSpend: () => void | Promise<unknown>;
+  events?: any[];
+  address?: string;
   disabled?: boolean;
 }
 
