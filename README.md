@@ -7,6 +7,17 @@
 
 ---
 
+```
+HOW TO RUN LOCALLY
+(assuming you are in project directory)
+yarn install
+cd packages/nextjs
+yarn dev
+```
+
+Contracts are already deployed to XSOLLA ZkSync sepolian network.
+
+
 ## Overview
 
 Game Economy Dashboard is a comprehensive blockchain-based platform that enables transparent game economies with provably fair lootbox mechanics, ERC1155 NFT items, and advanced analytics for developers.
