@@ -1,7 +1,9 @@
 "use client";
 
 import { useMemo } from "react";
+import { useBlockNumber } from "wagmi";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
+import { getOptimalBatchSize, isZkSyncNetwork } from "~~/utils/zkSync";
 
 export interface DailyMetrics {
   date: string;
@@ -59,21 +61,35 @@ const TOKEN_NAMES: { [key: number]: string } = {
 
 const LOOTBOX_PRICE = 0.1; // ETH
 
-export const useAdvancedAnalytics = () => {
-  // Fetch all transfer events
+export const useAdvancedAnalytics = (chainId?: number) => {
+  // Get current block number to calculate safe start block
+  const { data: currentBlockNumber } = useBlockNumber({ chainId });
+
+  // Calculate safe start block for zkSync (last 10,000 blocks ~3-4 hours)
+  // For other networks, we use a larger range
+  const blocksBack = chainId && isZkSyncNetwork(chainId) ? 10000 : 50000;
+  const fromBlockValue =
+    currentBlockNumber && currentBlockNumber > BigInt(blocksBack) ? currentBlockNumber - BigInt(blocksBack) : BigInt(0);
+
+  // Get optimal batch size based on network
+  const batchSize = chainId ? getOptimalBatchSize(chainId) : 100;
+
+  // Fetch all transfer events with optimized parameters
   const { data: transferEvents, isLoading: transferLoading } = useScaffoldEventHistory({
     contractName: "GameItems",
     eventName: "TransferSingle",
-    fromBlock: 0n,
+    fromBlock: fromBlockValue,
     watch: true,
+    blocksBatchSize: batchSize,
   });
 
-  // Fetch lootbox events
+  // Fetch lootbox events with optimized parameters
   const { data: lootboxEvents, isLoading: lootboxLoading } = useScaffoldEventHistory({
     contractName: "Lootbox",
     eventName: "LootboxOpened",
-    fromBlock: 0n,
+    fromBlock: fromBlockValue,
     watch: true,
+    blocksBatchSize: batchSize,
   });
 
   const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";

@@ -439,7 +439,7 @@ http://localhost:3000
 
 ## 🎯 Hackathon Checklist
 
-- [ ] Contracts deployed on zkSync Sepolia
+- [ ] Contracts deployed on zkSync SepoliaМы
 - [ ] Contracts verified on zkSync Explorer
 - [ ] Frontend connected to zkSync network
 - [ ] Player page working (open lootbox)

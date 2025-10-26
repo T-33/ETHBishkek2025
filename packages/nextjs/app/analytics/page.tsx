@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useChainId } from "wagmi";
 import { TokenDistribution } from "~~/components/analytics/TokenDistribution";
 import { TokenMetrics } from "~~/components/analytics/TokenMetrics";
 import { ActivityHeatmap } from "~~/components/analytics/advanced/ActivityHeatmap";
@@ -10,8 +11,11 @@ import { RecentEvents } from "~~/components/analytics/advanced/RecentEvents";
 import { TopPlayersLeaderboard } from "~~/components/analytics/advanced/TopPlayersLeaderboard";
 import { WhaleDistribution } from "~~/components/analytics/advanced/WhaleDistribution";
 import { useAdvancedAnalytics } from "~~/hooks/game/useAdvancedAnalytics";
+import { isZkSyncNetwork } from "~~/utils/zkSync";
 
 export default function AnalyticsPage() {
+  const chainId = useChainId();
+
   const {
     isLoading,
     dailyMetrics,
@@ -21,7 +25,7 @@ export default function AnalyticsPage() {
     activityHeatmap,
     recentEvents,
     aggregateStats,
-  } = useAdvancedAnalytics();
+  } = useAdvancedAnalytics(chainId);
 
   return (
     <main className="min-h-screen bg-[#0D1117] text-white p-8">
@@ -31,7 +35,7 @@ export default function AnalyticsPage() {
           Game Economy Dashboard
         </h1>
         <p className="text-gray-400 text-lg">
-          Real-time analytics and insights for your game&apos;s token economy on Ethereum
+          Real-time analytics and insights for your game&apos;s token economy on zkSync
         </p>
       </div>
 
@@ -40,6 +44,21 @@ export default function AnalyticsPage() {
           <div className="text-center">
             <div className="animate-spin text-6xl mb-4">⚡</div>
             <p className="text-gray-400">Loading advanced analytics...</p>
+            <p className="text-xs text-gray-500 mt-2">Fetching recent events from zkSync...</p>
+          </div>
+        </div>
+      ) : !dailyMetrics || dailyMetrics.length === 0 ? (
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="text-6xl mb-4">📊</div>
+            <p className="text-2xl text-white mb-2">No Data Yet</p>
+            <p className="text-gray-400 mb-4">Start by opening lootboxes to generate analytics data</p>
+            <a
+              href="/player"
+              className="inline-block px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all"
+            >
+              Go to Player Page
+            </a>
           </div>
         </div>
       ) : (
@@ -108,6 +127,11 @@ export default function AnalyticsPage() {
               <p className="text-sm text-gray-400 mt-4">
                 💡 All data updates in real-time as players interact with the game economy. Use these insights to make
                 informed decisions about drop rates, pricing, and supply caps.
+              </p>
+              <p className="text-xs text-yellow-400 mt-2">
+                ⚠️ Note: Analytics show data from the last{" "}
+                {chainId && isZkSyncNetwork(chainId) ? "~10,000 blocks (~3-4 hours)" : "~50,000 blocks"} to optimize
+                zkSync RPC performance.
               </p>
             </div>
           </div>

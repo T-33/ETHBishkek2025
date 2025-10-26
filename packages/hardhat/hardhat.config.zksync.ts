@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 import { HardhatUserConfig } from "hardhat/config";
-import "@matterlabs/hardhat-zksync";
+// Import only essential zkSync plugins to avoid conflicts
 import "@matterlabs/hardhat-zksync-deploy";
 import "@matterlabs/hardhat-zksync-solc";
 import "@matterlabs/hardhat-zksync-verify";
@@ -25,7 +25,7 @@ const deployerPrivateKey =
 const config: HardhatUserConfig = {
   // zkSync compiler configuration
   zksolc: {
-    version: "latest", // Use latest zksolc version
+    version: "1.5.7", // Stable zksolc version compatible with Solidity 0.8.20
     settings: {
       optimizer: {
         enabled: true,

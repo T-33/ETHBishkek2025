@@ -10,7 +10,16 @@
       "Bash(yarn cache clean:*)",
       "Bash(yarn add:*)",
       "Bash(yarn account)",
-      "Bash(yarn account:generate:*)"
+      "Bash(yarn account:generate:*)",
+      "Bash(yarn compile:zksync:*)",
+      "Bash(yarn hardhat compile:*)",
+      "Bash(npx hardhat:*)",
+      "Bash(cat:*)",
+      "Bash(yarn deploy:zksync:*)",
+      "Bash(yarn next:check-types:*)",
+      "Bash(timeout 30 yarn next:check-types:*)",
+      "Bash(npx tsc:*)",
+      "Bash(yarn tsc:*)"
     ],
     "deny": [],
     "ask": []

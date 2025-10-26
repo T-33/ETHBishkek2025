@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useBlockNumber, useChainId } from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
+import { getOptimalBatchSize, getTxExplorerUrl, isZkSyncNetwork } from "~~/utils/zkSync";
 
 const TOKEN_NAMES: { [key: number]: string } = {
   0: "Gold Coin",
@@ -29,19 +30,31 @@ const EVENT_COLORS: { [key: string]: string } = {
 
 export default function HistoryPage() {
   const { address, isConnected } = useAccount();
+  const chainId = useChainId();
+  const { data: currentBlockNumber } = useBlockNumber({ chainId });
+
+  // Calculate safe start block for zkSync (last 10,000 blocks ~3-4 hours)
+  const blocksBack = isZkSyncNetwork(chainId) ? 10000 : 50000;
+  const fromBlockValue =
+    currentBlockNumber && currentBlockNumber > BigInt(blocksBack) ? currentBlockNumber - BigInt(blocksBack) : BigInt(0);
+
+  // Get optimal batch size based on network
+  const batchSize = getOptimalBatchSize(chainId);
 
   const { data: transferEvents } = useScaffoldEventHistory({
     contractName: "GameItems",
     eventName: "TransferSingle",
-    fromBlock: 0n,
+    fromBlock: fromBlockValue,
     watch: true,
+    blocksBatchSize: batchSize,
   });
 
   const { data: lootboxEvents } = useScaffoldEventHistory({
     contractName: "Lootbox",
     eventName: "LootboxOpened",
-    fromBlock: 0n,
+    fromBlock: fromBlockValue,
     watch: true,
+    blocksBatchSize: batchSize,
   });
 
   // Filter and categorize events for the connected player
@@ -169,6 +182,15 @@ export default function HistoryPage() {
         </div>
       </div>
 
+      {/* Network Info */}
+      {isZkSyncNetwork(chainId) && (
+        <div className="mb-4 bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+          <p className="text-sm text-blue-300">
+            ℹ️ Showing transactions from the last ~10,000 blocks (~3-4 hours) to optimize zkSync RPC performance.
+          </p>
+        </div>
+      )}
+
       {/* Stats Summary */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
         <div className="bg-gradient-to-br from-green-600 to-green-800 rounded-xl p-4 border-2 border-green-500">
@@ -261,7 +283,7 @@ export default function HistoryPage() {
 
                       {/* Transaction Hash */}
                       <a
-                        href={`https://etherscan.io/tx/${event.txHash}`}
+                        href={getTxExplorerUrl(event.txHash, chainId)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-xs text-blue-400 hover:text-blue-300 inline-block"
@@ -305,7 +327,8 @@ export default function HistoryPage() {
             </li>
           </ul>
           <p className="text-xs text-gray-400 mt-4">
-            💡 All transactions are recorded on the Ethereum blockchain and are permanent and verifiable.
+            💡 All transactions are recorded on the {isZkSyncNetwork(chainId) ? "zkSync" : "Ethereum"} blockchain and
+            are permanent and verifiable.
           </p>
         </div>
       </div>

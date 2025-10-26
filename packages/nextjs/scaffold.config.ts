@@ -38,10 +38,38 @@ export const statusSepolia = {
   testnet: true,
 } as const satisfies Chain;
 
+// Define zkSync Sepolia Testnet
+export const zkSyncSepoliaTestnet = {
+  id: 300,
+  name: "zkSync Sepolia Testnet",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://sepolia.era.zksync.dev"],
+      webSocket: ["wss://sepolia.era.zksync.dev/ws"],
+    },
+    public: {
+      http: ["https://sepolia.era.zksync.dev"],
+      webSocket: ["wss://sepolia.era.zksync.dev/ws"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "zkSync Explorer",
+      url: "https://sepolia.explorer.zksync.io",
+    },
+  },
+  testnet: true,
+} as const satisfies Chain;
+
 const scaffoldConfig = {
   // The networks on which your DApp is live
-  // Switch between chains.hardhat (local) and statusSepolia (gasless L2)
-  targetNetworks: [chains.hardhat], // Change to [statusSepolia] for Status Network
+  // Switch between chains.hardhat (local), statusSepolia (gasless L2), or zkSyncSepoliaTestnet
+  targetNetworks: [zkSyncSepoliaTestnet], // Change to [chains.hardhat] for local or [statusSepolia] for Status Network
 
   // The interval at which your front-end polls the RPC servers for new data
   // it has no effect if you only target the local network (default is 4000)

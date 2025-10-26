@@ -1,0 +1,25 @@
+{
+  "network": "zkSyncSepoliaTestnet",
+  "chainId": 300,
+  "contracts": {
+    "GameItems": "0x809EB00D049f2D58ad7C7b7005B900C09FB68b5D",
+    "EconomyController": "0xcD24d6bbB32dC8bfB3eB2C8674584303CeFb84A7",
+    "Lootbox": "0xdb63c3Ff0a1a1bc2DC84f4f3d1cf1a6E4457fDCb"
+  },
+  "deployer": "0xDaf8B69d03D6Fc6f86CAe88db63981F5B67AD78f",
+  "timestamp": "2025-10-26T02:13:51.086Z",
+  "configuration": {
+    "rarityWeights": {
+      "goldCoin": 70,
+      "legendarySword": 20,
+      "epicChestplate": 10
+    },
+    "supplyCaps": {
+      "legendarySword": {
+        "max": 100,
+        "periodDays": 30
+      }
+    },
+    "lootboxPrice": "0.1 ETH"
+  }
+}

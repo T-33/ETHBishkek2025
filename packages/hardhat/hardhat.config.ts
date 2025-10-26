@@ -9,6 +9,10 @@ import "solidity-coverage";
 import "@nomicfoundation/hardhat-verify";
 import "hardhat-deploy";
 import "hardhat-deploy-ethers";
+import "@matterlabs/hardhat-zksync";
+import "@matterlabs/hardhat-zksync-deploy";
+import "@matterlabs/hardhat-zksync-solc";
+import "@matterlabs/hardhat-zksync-verify";
 import { task } from "hardhat/config";
 import generateTsAbis from "./scripts/generateTsAbis";
 
@@ -24,6 +28,15 @@ const etherscanApiKey = process.env.ETHERSCAN_V2_API_KEY || "DNXJA8RX2Q3VZ4URQIW
 const providerApiKey = process.env.ALCHEMY_API_KEY || "oKxs-03sij-U_N0iOlrSsZFr29-IqbuF";
 
 const config: HardhatUserConfig = {
+  zksolc: {
+    version: "latest",
+    settings: {
+      optimizer: {
+        enabled: true,
+        mode: "3",
+      },
+    },
+  },
   solidity: {
     compilers: [
       {
@@ -131,6 +144,27 @@ const config: HardhatUserConfig = {
     },
     celoSepolia: {
       url: "https://forno.celo-sepolia.celo-testnet.org/",
+      accounts: [deployerPrivateKey],
+    },
+    // zkSync Networks
+    zkSyncSepoliaTestnet: {
+      url: "https://sepolia.era.zksync.dev",
+      ethNetwork: "sepolia",
+      zksync: true,
+      verifyURL: "https://explorer.sepolia.era.zksync.dev/contract_verification",
+      accounts: [deployerPrivateKey],
+    },
+    zkSyncMainnet: {
+      url: "https://mainnet.era.zksync.io",
+      ethNetwork: "mainnet",
+      zksync: true,
+      verifyURL: "https://zksync2-mainnet-explorer.zksync.io/contract_verification",
+      accounts: [deployerPrivateKey],
+    },
+    zkSyncLocal: {
+      url: "http://localhost:3050",
+      ethNetwork: "http://localhost:8545",
+      zksync: true,
       accounts: [deployerPrivateKey],
     },
   },

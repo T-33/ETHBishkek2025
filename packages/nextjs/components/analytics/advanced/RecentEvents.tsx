@@ -1,8 +1,10 @@
 "use client";
 
 import React from "react";
+import { useChainId } from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
 import { RecentEvent } from "~~/hooks/game/useAdvancedAnalytics";
+import { getTxExplorerUrl } from "~~/utils/zkSync";
 
 interface RecentEventsProps {
   events: RecentEvent[];
@@ -29,6 +31,8 @@ const EVENT_COLORS: { [key: string]: string } = {
 };
 
 export const RecentEvents = ({ events }: RecentEventsProps) => {
+  const chainId = useChainId();
+
   const formatTimestamp = (timestamp: number) => {
     const date = new Date(timestamp);
     const now = Date.now();
@@ -91,7 +95,7 @@ export const RecentEvents = ({ events }: RecentEventsProps) => {
 
                     {/* Transaction Hash */}
                     <a
-                      href={`https://etherscan.io/tx/${event.txHash}`}
+                      href={getTxExplorerUrl(event.txHash, chainId)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs text-blue-400 hover:text-blue-300 mt-1 inline-block"

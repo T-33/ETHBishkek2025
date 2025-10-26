@@ -11,7 +11,7 @@ contract Lootbox is Ownable, Pausable {
     EconomyController public immutable economyController;
 
     // The price to open one loot box.
-    uint256 public lootboxPrice = 0.1 ether; // Example: 0.1 ETH
+    uint256 public lootboxPrice = 0.001 ether; // Example: 0.1 ETH
 
     // A nonce to add a bit more entropy to our pseudo-randomness.
     uint256 private _nonce;
