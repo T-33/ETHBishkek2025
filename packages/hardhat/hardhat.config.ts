@@ -122,6 +122,13 @@ const config: HardhatUserConfig = {
       url: "https://forno.celo.org",
       accounts: [deployerPrivateKey],
     },
+    // Status Network Sepolia - First natively gasless Ethereum L2
+    statusSepolia: {
+      url: "https://sepolia.status.im",
+      chainId: 10200,
+      accounts: [deployerPrivateKey],
+      gasPrice: 0, // Gasless transactions!
+    },
     celoSepolia: {
       url: "https://forno.celo-sepolia.celo-testnet.org/",
       accounts: [deployerPrivateKey],

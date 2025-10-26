@@ -6,7 +6,11 @@
       "Bash(yarn add recharts)",
       "Bash(yarn generate-activity:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(yarn cache clean:*)",
+      "Bash(yarn add:*)",
+      "Bash(yarn account)",
+      "Bash(yarn account:generate:*)"
     ],
     "deny": [],
     "ask": []
