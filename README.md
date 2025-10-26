@@ -1,88 +1,303 @@
-# 🏗 Scaffold-ETH 2
+# Game Economy Dashboard
 
-<h4 align="center">
-  <a href="https://docs.scaffoldeth.io">Documentation</a> |
-  <a href="https://scaffoldeth.io">Website</a>
-</h4>
+> **A transparent, on-chain game economy solution with NFT lootboxes and real-time analytics**
 
-🧪 An open-source, up-to-date toolkit for building decentralized applications (dapps) on the Ethereum blockchain. It's designed to make it easier for developers to create and deploy smart contracts and build user interfaces that interact with those contracts.
+[![zkSync](https://img.shields.io/badge/zkSync-Sepolia-blue)](https://sepolia.explorer.zksync.io/)
+[![Built with Scaffold-ETH 2](https://img.shields.io/badge/Built%20with-Scaffold--ETH%202-orange)](https://scaffoldeth.io/)
 
-⚙️ Built using NextJS, RainbowKit, Foundry/Hardhat, Wagmi, Viem, and Typescript.
+---
 
-- ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
-- 🪝 **[Custom hooks](https://docs.scaffoldeth.io/hooks/)**: Collection of React hooks wrapper around [wagmi](https://wagmi.sh/) to simplify interactions with smart contracts with typescript autocompletion.
-- 🧱 [**Components**](https://docs.scaffoldeth.io/components/): Collection of common web3 components to quickly build your frontend.
-- 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
-- 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
+## Overview
 
-![Debug Contracts tab](https://github.com/scaffold-eth/scaffold-eth-2/assets/55535804/b237af0c-5027-4849-a5c1-2e31495cccb1)
+Game Economy Dashboard is a comprehensive blockchain-based platform that enables transparent game economies with provably fair lootbox mechanics, ERC1155 NFT items, and advanced analytics for developers.
 
-## Requirements
+**Problem:** Game developers struggle with opacity in item distribution, economic inflation, and player distrust in centralized systems.
 
-Before you begin, you need to install the following tools:
+**Solution:** On-chain lootboxes with transparent probabilities, real-time analytics, and supply controls that give developers full visibility while players truly own their items.
 
-- [Node (>= v20.18.3)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
+---
 
-## Quickstart
+## Key Features
 
-To get started with Scaffold-ETH 2, follow the steps below:
+### For Players
+- **Transparent Lootboxes**: Open mystery boxes with provably fair on-chain randomness
+- **True Ownership**: Items are ERC1155 NFTs you actually own
+- **Visible Economics**: See total supply, circulation, and rarity of items
+- **Burn Mechanism**: Remove unwanted items from circulation to increase rarity
 
-1. Install the latest version of Scaffold-ETH 2
+### For Developers
+- **Real-Time Analytics**: Track minting, burning, transfers, and player activity
+- **Economic Controls**: Configure rarity weights and monthly supply caps
+- **Anti-Inflation System**: Enforce time-based minting limits per item type
+- **Activity Tracking**: Comprehensive event logs and transaction history
+- **Modular Architecture**: Easy integration into existing games
+
+---
+
+## Tech Stack
+
+**Blockchain**
+- zkSync Era (Layer 2)
+- Solidity 0.8.20
+- Hardhat + zkSync plugins
+
+**Smart Contracts**
+- ERC1155 Multi-Token Standard (OpenZeppelin)
+- Modular architecture: GameItems, EconomyController, Lootbox
+- Pausable & Ownable security patterns
+
+**Frontend**
+- Next.js 14 (App Router)
+- TypeScript
+- Wagmi v2 + Viem
+- TailwindCSS + DaisyUI
+- Recharts for analytics
+
+---
+
+## Deployed Contracts (zkSync Sepolia)
+
+| Contract | Address | Explorer |
+|----------|---------|----------|
+| **GameItems** | `0x809EB00D049f2D58ad7C7b7005B900C09FB68b5D` | [View](https://sepolia.explorer.zksync.io/address/0x809EB00D049f2D58ad7C7b7005B900C09FB68b5D) |
+| **EconomyController** | `0xcD24d6bbB32dC8bfB3eB2C8674584303CeFb84A7` | [View](https://sepolia.explorer.zksync.io/address/0xcD24d6bbB32dC8bfB3eB2C8674584303CeFb84A7) |
+| **Lootbox** | `0xdb63c3Ff0a1a1bc2DC84f4f3d1cf1a6E4457fDCb` | [View](https://sepolia.explorer.zksync.io/address/0xdb63c3Ff0a1a1bc2DC84f4f3d1cf1a6E4457fDCb) |
+
+**Network**: zkSync Sepolia Testnet (Chain ID: 300)
+
+---
+
+## Architecture
+
+### Smart Contract Flow
 
 ```
-npx create-eth@latest
+Player → Lootbox.openLootbox() (pays ETH)
+           ↓
+       EconomyController.requestMint()
+           ├─ Check rarity weights
+           ├─ Validate supply caps
+           └─ Enforce time-based limits
+           ↓
+       GameItems.mint() (ERC1155)
+           ↓
+       Player receives NFT items
 ```
 
-This command will install all the necessary packages and dependencies, so it might take a while.
+### Game Items
 
-> [!NOTE]
-> You can also initialize your project with one of our extensions to add specific features or starter-kits. Learn more in our [extensions documentation](https://docs.scaffoldeth.io/extensions/).
+- **Gold Coin** (ID: 0) - Common, 70% drop rate, 100 units per lootbox
+- **Legendary Sword** (ID: 1) - Epic, 20% drop rate, monthly cap: 100
+- **Epic Golden Chestplate** (ID: 2) - Legendary, 10% drop rate
 
-2. Run a local network in the first terminal:
+### Key Design Principles
 
+1. **Separation of Concerns**: GameItems (storage), EconomyController (rules), Lootbox (mechanics)
+2. **Security**: Only authorized contracts can mint; all rules enforced on-chain
+3. **Modularity**: Swap mechanics without changing core contracts
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js >= 20.18.3
+- Yarn v1 or v2+
+- MetaMask with zkSync Sepolia ETH
+
+### Installation
+
+```bash
+# Clone repository
+git clone <your-repo-url>
+cd ETHBishkek2025
+
+# Install dependencies
+yarn install
 ```
+
+### Local Development
+
+```bash
+# Terminal 1: Start local blockchain
 yarn chain
-```
 
-This command starts a local Ethereum network that runs on your local machine and can be used for testing and development. Learn how to [customize your network configuration](https://docs.scaffoldeth.io/quick-start/environment#1-initialize-a-local-blockchain).
-
-3. On a second terminal, deploy the test contract:
-
-```
+# Terminal 2: Deploy contracts
 yarn deploy
-```
 
-This command deploys a test smart contract to the local network. You can find more information about how to customize your contract and deployment script in our [documentation](https://docs.scaffoldeth.io/quick-start/environment#2-deploy-your-smart-contract).
-
-4. On a third terminal, start your NextJS app:
-
-```
+# Terminal 3: Start frontend
 yarn start
 ```
 
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the `Debug Contracts` page. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
+Open [http://localhost:3000](http://localhost:3000)
 
-**What's next**:
+### Deploy to zkSync Sepolia
 
-Visit the [What's next section of our docs](https://docs.scaffoldeth.io/quick-start/environment#whats-next) to learn how to:
+```bash
+# Set up environment
+cp packages/hardhat/.env.example packages/hardhat/.env
+# Add your private key to .env
 
-- Edit your smart contracts
-- Edit your deployment scripts
-- Customize your frontend
-- Edit the app config
-- Writing and running tests
-- [Setting up external services and API keys](https://docs.scaffoldeth.io/deploying/deploy-smart-contracts#configuration-of-third-party-services-for-production-grade-apps)
+# Deploy contracts
+cd packages/hardhat
+yarn deploy:zksync
 
-## Documentation
+# Start frontend
+cd ../nextjs
+yarn dev
+```
 
-Visit our [docs](https://docs.scaffoldeth.io) to learn all the technical details and guides of Scaffold-ETH 2.
+### Generate Test Data
 
-To know more about its features, check out our [website](https://scaffoldeth.io).
+```bash
+# Populate analytics with test transactions
+yarn generate-activity
+```
 
-## Contributing to Scaffold-ETH 2
+---
 
-We welcome contributions to Scaffold-ETH 2!
+## Usage
 
-Please see [CONTRIBUTING.MD](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to Scaffold-ETH 2.
+### Player Portal (`/player`)
+1. Connect MetaMask to zkSync Sepolia
+2. Click "Open Lootbox" (costs 0.001 ETH on testnet)
+3. Receive random items based on weighted probabilities
+4. View inventory and burn unwanted items
+
+### Analytics Dashboard (`/analytics`)
+- **Aggregate Stats**: Total minted, burned, in circulation, unique holders
+- **Token Distribution**: Breakdown by item type with charts
+- **Top Players**: Leaderboard of largest holders
+- **Whale Analysis**: Token concentration metrics
+- **Activity Heatmap**: Usage patterns by time
+- **Recent Events**: Live transaction feed
+
+### Transaction History (`/history`)
+- Personal transaction log (mints, burns, transfers)
+- Links to zkSync Explorer for verification
+
+---
+
+## Project Structure
+
+```
+ETHBishkek2025/
+├── packages/
+│   ├── hardhat/              # Smart contracts
+│   │   ├── contracts/        # Solidity contracts
+│   │   ├── deploy/           # Deployment scripts
+│   │   └── scripts/          # Helper scripts
+│   │
+│   └── nextjs/               # Frontend
+│       ├── app/              # Next.js pages
+│       ├── components/       # React components
+│       ├── hooks/            # Custom hooks
+│       ├── contracts/        # ABIs & addresses
+│       └── utils/            # Utility functions
+│
+├── CLAUDE.md                 # Developer guide
+└── README.md                 # This file
+```
+
+---
+
+## Development Commands
+
+```bash
+# Contract development
+yarn compile                  # Compile contracts
+yarn deploy                   # Deploy to local network
+yarn deploy:zksync           # Deploy to zkSync Sepolia
+yarn test                     # Run contract tests
+
+# Frontend development
+yarn start                    # Start Next.js dev server
+yarn next:check-types        # TypeScript type checking
+yarn next:lint               # Lint frontend code
+
+# Testing
+yarn generate-activity       # Generate test transactions
+yarn hardhat:test           # Run contract tests with gas reports
+
+# Utilities
+yarn account                 # Show deployer account info
+yarn format                  # Format code (both packages)
+```
+
+---
+
+## Key Technologies
+
+### zkSync Era
+- Layer 2 scaling for lower gas costs
+- Faster transactions than Ethereum mainnet
+- Optimized for gaming use cases
+
+### ERC1155
+- Multi-token standard for game items
+- Efficient batch transfers
+- Flexible metadata system
+
+### Scaffold-ETH 2
+- Rapid dApp development framework
+- Hot-reload for contracts
+- Custom hooks for blockchain interactions
+
+---
+
+## Security Features
+
+- **Access Control**: Only authorized contracts can mint items
+- **Pausable**: Emergency stop mechanism for all contracts
+- **Supply Caps**: Monthly limits prevent inflation
+- **On-Chain Randomness**: Transparent lootbox mechanics (block-based)
+- **Ownership Transfer**: Controlled handoff between contracts
+
+---
+
+## Analytics Features
+
+The platform tracks comprehensive metrics:
+
+- **Economic Metrics**: Minting rate, burn rate, circulation
+- **Player Metrics**: Unique holders, top players, whale distribution
+- **Activity Metrics**: Lootbox opens, transfers, time-based patterns
+- **Revenue Metrics**: Total ETH collected from lootbox sales
+
+All data is calculated from on-chain events in real-time.
+
+---
+
+## Roadmap
+
+### Current (v1.0)
+- Lootbox mechanics with weighted randomness
+- ERC1155 item ownership
+- Real-time analytics dashboard
+- zkSync Sepolia deployment
+
+### Future
+- Multi-game support
+- Secondary marketplace integration
+- Crafting and fusion mechanics
+- Advanced tokenomics (staking, rewards)
+- Mainnet deployment
+
+---
+
+## License
+
+MIT License
+
+---
+
+## Contact & Links
+
+- **Documentation**: See `CLAUDE.md` for detailed developer guide
+- **zkSync Docs**: https://docs.zksync.io/
+- **Scaffold-ETH 2**: https://docs.scaffoldeth.io/
+
+---
+
+**Built with Scaffold-ETH 2 for ETH Bishkek 2025**
