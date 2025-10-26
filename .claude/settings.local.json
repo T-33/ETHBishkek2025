@@ -19,7 +19,9 @@
       "Bash(yarn next:check-types:*)",
       "Bash(timeout 30 yarn next:check-types:*)",
       "Bash(npx tsc:*)",
-      "Bash(yarn tsc:*)"
+      "Bash(yarn tsc:*)",
+      "Bash(git rm:*)",
+      "Bash(timeout 60 yarn next:check-types:*)"
     ],
     "deny": [],
     "ask": []

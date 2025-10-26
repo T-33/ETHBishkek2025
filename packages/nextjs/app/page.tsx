@@ -132,9 +132,6 @@ const Home: NextPage = () => {
               <Link href="/debug" className="text-blue-400 hover:text-blue-300 underline">
                 Debug Contracts
               </Link>
-              <Link href="/blockexplorer" className="text-blue-400 hover:text-blue-300 underline">
-                Block Explorer
-              </Link>
             </div>
           </div>
         </div>
