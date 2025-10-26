@@ -21,7 +21,8 @@
       "Bash(npx tsc:*)",
       "Bash(yarn tsc:*)",
       "Bash(git rm:*)",
-      "Bash(timeout 60 yarn next:check-types:*)"
+      "Bash(timeout 60 yarn next:check-types:*)",
+      "Bash(npx ts-node scripts/deploy-status.ts)"
     ],
     "deny": [],
     "ask": []

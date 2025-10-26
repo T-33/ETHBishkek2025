@@ -25,7 +25,8 @@ async function main() {
   // ========================================
   console.log("📦 [1/3] Deploying GameItems (ERC1155)...");
   const GameItems = await ethers.getContractFactory("GameItems");
-  const gameItems = await GameItems.deploy();
+  const baseURI = "https://ipfs.io/ipfs/bafkreiabcd1234567890"; // Base URI for metadata
+  const gameItems = await GameItems.deploy(baseURI, deployerAddress);
   await gameItems.waitForDeployment();
   const gameItemsAddress = await gameItems.getAddress();
   console.log("✅ GameItems deployed to:", gameItemsAddress);
@@ -36,7 +37,7 @@ async function main() {
   // ========================================
   console.log("💰 [2/3] Deploying EconomyController...");
   const EconomyController = await ethers.getContractFactory("EconomyController");
-  const economyController = await EconomyController.deploy(gameItemsAddress);
+  const economyController = await EconomyController.deploy(gameItemsAddress, deployerAddress);
   await economyController.waitForDeployment();
   const economyControllerAddress = await economyController.getAddress();
   console.log("✅ EconomyController deployed to:", economyControllerAddress);
@@ -46,54 +47,50 @@ async function main() {
   // 3. Deploy Lootbox
   // ========================================
   console.log("🎁 [3/3] Deploying Lootbox...");
-  const lootboxPrice = ethers.parseEther("0.001"); // 0.001 ETH for testnet
   const Lootbox = await ethers.getContractFactory("Lootbox");
-  const lootbox = await Lootbox.deploy(gameItemsAddress, economyControllerAddress, lootboxPrice);
+  const lootbox = await Lootbox.deploy(economyControllerAddress, deployerAddress);
   await lootbox.waitForDeployment();
   const lootboxAddress = await lootbox.getAddress();
   console.log("✅ Lootbox deployed to:", lootboxAddress);
-  console.log("   Lootbox price:", ethers.formatEther(lootboxPrice), "ETH");
   console.log("   Gas cost: 0 ETH (Gasless!) 🎉\n");
 
   // ========================================
-  // 4. Setup Contract Relationships
+  // 4. Configure Contracts
   // ========================================
-  console.log("🔗 Setting up contract relationships...");
+  console.log("⚙️  Configuring contracts...");
 
-  console.log("   → Transferring GameItems ownership to EconomyController...");
+  console.log("   [1/4] Transferring GameItems ownership to EconomyController...");
   const transferTx = await gameItems.transferOwnership(economyControllerAddress);
   await transferTx.wait();
   console.log("   ✅ Ownership transferred (Gas: 0 ETH)");
 
-  console.log("   → Setting Lootbox as authorized minter...");
-  const setMinterTx = await economyController.setMinter(lootboxAddress, true);
-  await setMinterTx.wait();
-  console.log("   ✅ Lootbox authorized (Gas: 0 ETH)\n");
+  console.log("   [2/4] Setting Lootbox address in EconomyController...");
+  const setLootboxTx = await economyController.setLootboxAddress(lootboxAddress);
+  await setLootboxTx.wait();
+  console.log("   ✅ Lootbox address configured (Gas: 0 ETH)");
 
-  // ========================================
-  // 5. Configure Game Economy
-  // ========================================
-  console.log("⚙️  Configuring game economy...");
-
-  console.log("   → Setting rarity weights...");
+  console.log("   [3/4] Configuring item rarity weights...");
   const setRarityTx = await economyController.setRarity(
-    [0, 1, 2], // Gold Coin, Legendary Sword, Epic Chestplate
-    [70, 20, 10], // 70% gold, 20% sword, 10% chestplate
+    [0, 1, 2], // Token IDs: Gold Coin, Legendary Sword, Epic Chestplate
+    [70, 20, 10], // Weights: 70% common, 20% epic, 10% legendary
   );
   await setRarityTx.wait();
-  console.log("   ✅ Rarity: 70% Gold, 20% Sword, 10% Chestplate (Gas: 0 ETH)");
+  console.log("   ✅ Rarity weights configured (Gas: 0 ETH):");
+  console.log("      - Gold Coin (ID 0): 70% chance");
+  console.log("      - Legendary Sword (ID 1): 20% chance");
+  console.log("      - Epic Chestplate (ID 2): 10% chance");
 
-  console.log("   → Setting monthly cap for Legendary Sword...");
+  console.log("\n   [4/4] Setting supply cap for Legendary Sword...");
   const setCapTx = await economyController.setMonthlyCap(
     1, // Token ID 1 (Legendary Sword)
-    100, // Max 100 swords
-    30, // Per 30 days
+    100, // Max 100 per period
+    30, // Period: 30 days
   );
   await setCapTx.wait();
-  console.log("   ✅ Cap: 100 Legendary Swords per 30 days (Gas: 0 ETH)\n");
+  console.log("   ✅ Supply cap set: Max 100 Legendary Swords per 30 days (Gas: 0 ETH)\n");
 
   // ========================================
-  // 6. Summary
+  // DEPLOYMENT SUMMARY
   // ========================================
   console.log("\n🎉 Deployment Complete!\n");
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
@@ -148,7 +145,7 @@ async function main() {
       Lootbox: lootboxAddress,
     },
     configuration: {
-      lootboxPrice: ethers.formatEther(lootboxPrice) + " ETH",
+      lootboxPrice: "0.001 ETH (set in contract)",
       rarityWeights: {
         goldCoin: "70%",
         legendarySword: "20%",
